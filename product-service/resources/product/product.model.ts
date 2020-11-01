@@ -6,8 +6,6 @@ interface IProduct {
     brand: string
 }
 
-let counter: number = 0;
-
 export class Product implements IProduct {
     description: string;
     id: string;
@@ -15,9 +13,9 @@ export class Product implements IProduct {
     title: string;
     brand: string;
 
-    constructor(title: string, price: number, description: string, brand: string) {
+    constructor(id, title: string, price: number, description: string, brand: string) {
         this.description = description;
-        this.id = (counter++).toString();
+        this.id = id;
         this.price = price;
         this.title = title;
         this.brand = brand;
