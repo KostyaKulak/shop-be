@@ -9,6 +9,10 @@ export const getProductsById: APIGatewayProxyHandler = async (event, _context) =
     const productById: Product[] = products.filter((product: Product) => product.id === id);
     console.log(`Found product: ${productById}`)
     return {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': true,
+        },
         statusCode: 200,
         body: JSON.stringify(productById)
     };

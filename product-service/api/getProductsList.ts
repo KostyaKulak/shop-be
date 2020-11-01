@@ -8,6 +8,10 @@ export const getProductsList: APIGatewayProxyHandler = async () => {
     const json = await response.json();
     console.log(`Current time: ${json.datetime}`);
     return {
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Credentials': true,
+        },
         statusCode: 200,
         body: JSON.stringify(products)
     };
