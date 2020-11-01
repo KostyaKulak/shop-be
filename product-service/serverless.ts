@@ -28,13 +28,24 @@ const serverlessConfiguration: Serverless = {
     },
   },
   functions: {
-    hello: {
-      handler: 'handler.hello',
+    getProductsList: {
+      handler: 'api/getProductsList.getProductsList',
       events: [
         {
           http: {
             method: 'get',
-            path: 'hello',
+            path: 'products',
+          }
+        }
+      ]
+    },
+    getProductsById: {
+      handler: 'api/getProductsById.getProductsById',
+      events: [
+        {
+          http: {
+            method: 'get',
+            path: 'products/{id}',
           }
         }
       ]
