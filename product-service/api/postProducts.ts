@@ -8,8 +8,17 @@ import {logRequest} from "../utils/log.utils";
 
 export const postProducts: APIGatewayProxyHandler = async (event, _context) => {
     logRequest(event);
+    let products: Product[];
     try {
-        const products: Product[] = JSON.parse(event.body);
+        products = JSON.parse(event.body);
+    } catch (e) {
+        return {
+            headers: CORS_HEADERS,
+            statusCode: 400,
+            body: `Data is not valid`
+        };
+    }
+    try {
         for (const product of products) {
             await executeQuery(`
                     INSERT INTO products (title, description, price, brand)
