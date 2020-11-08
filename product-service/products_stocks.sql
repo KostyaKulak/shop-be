@@ -35,4 +35,4 @@ VALUES ((SELECT id FROM products WHERE products.brand = 'Bvlgari'), 1),
        ((SELECT id FROM products WHERE products.brand = 'Escada'), 5),
        ((SELECT id FROM products WHERE products.brand = 'Kenzo'), 4);
 
-SELECT * FROM products p LEFT JOIN stocks s on p.id = s.product_id;
+SELECT id, title, description, price, brand, count FROM products p LEFT JOIN stocks s on p.id = s.product_id;

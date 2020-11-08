@@ -1,13 +1,12 @@
 import {APIGatewayProxyHandler} from 'aws-lambda';
 import 'source-map-support/register';
-import {products} from "../resources/product/product.mocked";
-import fetch from 'node-fetch';
+import {Product} from "../resources/product/product.model";
+import {executeQuery} from "../db/db.client";
 
 export const getProductsList: APIGatewayProxyHandler = async () => {
+    let products: Product[] = [];
     try {
-        const response = await fetch('http://worldtimeapi.org/api/ip')
-        const json = await response.json();
-        console.log(`Current time: ${json.datetime}`);
+        products = await executeQuery('SELECT id, title, description, price, brand, count FROM products p  JOIN stocks s on p.id = s.product_id')
         return {
             headers: {
                 'Access-Control-Allow-Origin': '*',
