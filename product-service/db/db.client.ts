@@ -1,4 +1,5 @@
 import {Pool, PoolConfig} from 'pg';
+import {DbError} from "../utils/db.error";
 
 const {PG_HOST, PG_PORT, PG_DATABASE, PG_USERNAME, PG_PASSWORD} = process.env;
 
@@ -31,7 +32,7 @@ export async function executeQuery<T>(query: string): Promise<T> {
     try {
         result = (await client.query(query)).rows;
     } catch (e) {
-        throw new Error(`Error executing query: ${query}, \n error: ${e}`);
+        throw new DbError(`Error executing query: ${query}, \n error: ${e}`);
     } finally {
         client.release();
     }

@@ -2,8 +2,12 @@ import {APIGatewayProxyHandler} from 'aws-lambda';
 import 'source-map-support/register';
 import {Product} from "../resources/product/product.model";
 import {executeQuery} from "../db/db.client";
+import {return500} from "../utils/error.utils";
+import {CORS_HEADERS} from "../constants/headers";
+import {logRequest} from "../utils/log.utils";
 
 export const postProducts: APIGatewayProxyHandler = async (event, _context) => {
+    logRequest(event);
     try {
         const products: Product[] = JSON.parse(event.body);
         for (const product of products) {
@@ -17,14 +21,11 @@ export const postProducts: APIGatewayProxyHandler = async (event, _context) => {
 
         }
         return {
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': true,
-            },
+            headers: CORS_HEADERS,
             statusCode: 201,
             body: `${products.length} products are added`
         };
     } catch (error) {
-        console.log(error)
+        return500(error);
     }
 }
