@@ -10,12 +10,19 @@ export const postProducts: APIGatewayProxyHandler = async (event, _context) => {
     logRequest(event);
     let products: Product[];
     try {
-        products = JSON.parse(event.body);
+        const elements: any[] = JSON.parse(event.body);
+        elements.forEach(element => {
+            const {title, description, price, brand, count} = element;
+            if (title === undefined || description === undefined || price === undefined || brand === undefined || count === undefined) {
+                throw new Error(`${element} is not valid`);
+            }
+        });
+        products = elements;
     } catch (e) {
         return {
             headers: CORS_HEADERS,
             statusCode: 400,
-            body: `Data is not valid`
+            body: `Data is not valid \n ${e.message}`
         };
     }
     try {
