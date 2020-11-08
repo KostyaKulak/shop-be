@@ -9,14 +9,25 @@ export const getProductsById: APIGatewayProxyHandler = async (event, _context) =
         console.log(`Product id: ${id}`);
         const productById: Product[] = await executeQuery(`SELECT id, title, description, price, brand, count FROM products p  JOIN stocks s on p.id = s.product_id WHERE id = '${id}'`)
         console.log(`Found product: ${productById}`)
-        return {
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': true,
-            },
-            statusCode: 200,
-            body: productById.length !== 0 ? JSON.stringify(productById) : 'Product not found'
-        };
+        if (productById.length !== 0) {
+            return {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                statusCode: 200,
+                body: JSON.stringify(productById)
+            };
+        } else {
+            return {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                statusCode: 404,
+                body: 'Product not found'
+            };
+        }
     } catch (error) {
         console.log(error)
     }
