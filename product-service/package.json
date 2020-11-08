@@ -9,6 +9,7 @@
   "dependencies": {
     "@types/node-fetch": "^2.5.7",
     "node-fetch": "^2.6.1",
+    "pg": "^8.4.2",
     "source-map-support": "^0.5.10",
     "uuidv4": "^6.2.4"
   },
