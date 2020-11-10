@@ -30,8 +30,11 @@ export async function executeQuery<T>(query: string): Promise<T> {
     const client = await connectDB();
     let result: T;
     try {
+        await client.query('BEGIN');
         result = (await client.query(query)).rows;
+        await client.query('COMMIT');
     } catch (e) {
+        await client.query('ROLLBACK');
         throw new DbError(`Error executing query: ${query}, \n error: ${e}`);
     } finally {
         client.release();
