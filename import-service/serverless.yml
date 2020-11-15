@@ -1,0 +1,12 @@
+service: import-service
+
+frameworkVersion: '2'
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-west-1
+
+custom:
+  client:
+    bucketName: kostyakulak-import-service

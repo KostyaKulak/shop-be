@@ -1,0 +1,17 @@
+{
+  "name": "import-service",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "deploy": "sls deploy"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.792.0",
+    "csv-parser": "^2.3.3"
+  },
+  "devDependencies": {
+    "aws-sdk-mock": "^5.1.0"
+  }
+}
