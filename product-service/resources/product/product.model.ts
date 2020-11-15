@@ -12,12 +12,14 @@ export class Product implements IProduct {
     price: number;
     title: string;
     brand: string;
+    count: number;
 
-    constructor(id, title: string, price: number, description: string, brand: string) {
+    constructor(id: string, title: string, price: number, description: string, brand: string, count: number) {
         this.description = description;
         this.id = id;
         this.price = price;
         this.title = title;
         this.brand = brand;
+        this.count = count;
     }
 }

@@ -1,22 +1,22 @@
 import {APIGatewayProxyHandler} from 'aws-lambda';
 import 'source-map-support/register';
-import {products} from "../resources/product/product.mocked";
-import fetch from 'node-fetch';
+import {Product} from "../resources/product/product.model";
+import {executeQuery} from "../db/db.client";
+import {return500} from "../utils/error.utils";
+import {CORS_HEADERS} from "../constants/headers";
+import {logRequest} from "../utils/log.utils";
 
-export const getProductsList: APIGatewayProxyHandler = async () => {
+export const getProductsList: APIGatewayProxyHandler = async (event) => {
+    logRequest(event);
+    let products: Product[] = [];
     try {
-        const response = await fetch('http://worldtimeapi.org/api/ip')
-        const json = await response.json();
-        console.log(`Current time: ${json.datetime}`);
+        products = await executeQuery('SELECT id, title, description, price, brand, count FROM products p  JOIN stocks s on p.id = s.product_id')
         return {
-            headers: {
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Credentials': true,
-            },
+            headers: CORS_HEADERS,
             statusCode: 200,
             body: JSON.stringify(products)
         };
     } catch (error) {
-        console.log(error);
+        return500(error);
     }
 }
