@@ -3,8 +3,8 @@ import 'source-map-support/register';
 import {Product} from "../resources/product/product.model";
 import {executeQuery} from "../db/db.client";
 import {return500} from "../utils/error.utils";
-import {CORS_HEADERS} from "../constants/headers";
 import {logRequest} from "../utils/log.utils";
+import {toError, toSuccess} from "../../core/response";
 
 export const postProducts: APIGatewayProxyHandler = async (event, _context) => {
     logRequest(event);
@@ -19,11 +19,7 @@ export const postProducts: APIGatewayProxyHandler = async (event, _context) => {
         });
         products = elements;
     } catch (e) {
-        return {
-            headers: CORS_HEADERS,
-            statusCode: 400,
-            body: `Data is not valid \n ${e.message}`
-        };
+        return toError(`Data is not valid \n ${e.message}`);
     }
     try {
         for (const product of products) {
@@ -36,11 +32,7 @@ export const postProducts: APIGatewayProxyHandler = async (event, _context) => {
                     VALUES ((SELECT id FROM products WHERE products.title = '${product.title}'), ${product.count})`)
 
         }
-        return {
-            headers: CORS_HEADERS,
-            statusCode: 201,
-            body: `${products.length} products are added`
-        };
+        toSuccess({payload: `${products.length} products are added`}, {statusCode: 201});
     } catch (error) {
         return500(error);
     }
