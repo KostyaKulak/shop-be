@@ -1,5 +1,5 @@
 import type { Serverless } from 'serverless/aws';
-import {AWS_SQS_QUEUE} from "../core/constants";
+import {AWS_REGION, AWS_SQS_QUEUE, AWS_STACK_ID} from "../core/constants";
 
 const serverlessConfiguration: Serverless = {
   service: {
@@ -41,6 +41,10 @@ const serverlessConfiguration: Serverless = {
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
     },
+    iamRoleStatements: [
+      {Effect: 'Allow', Action: 'lambda:InvokeFunction', Resource: [`arn:aws:lambda:${AWS_REGION}:${AWS_STACK_ID}:function:product-service-dev-postProducts`]}
+    ]
+
   },
   functions: {
     getProductsList: {
