@@ -24,12 +24,13 @@ export const importFileParser: S3Handler = async (event: S3Event) => {
                 sqs.sendMessage({
                     QueueUrl: process.env.SQS_URL,
                     MessageBody: JSON.stringify(product)
-                }, (err,data) => {
-                    // if (err){
-                    console.log(err);
-                    console.log(data);
-                    // }
-                    console.log(`Send message for: ${JSON.stringify(product)}`);
+                }, (err) => {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log(product);
+                        console.log(`Send message for: ${JSON.stringify(product)}`);
+                    }
                 });
             })
             .on('error', (error) => reject(error))
