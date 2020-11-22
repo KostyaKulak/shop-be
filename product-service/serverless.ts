@@ -1,11 +1,9 @@
 import type { Serverless } from 'serverless/aws';
+import {AWS_SQS_QUEUE} from "../core/constants";
 
 const serverlessConfiguration: Serverless = {
   service: {
     name: 'product-service',
-    // app and org for use with dashboard.serverless.com
-    // app: your-app-name,
-    // org: your-org-name,
   },
   frameworkVersion: '2',
   custom: {
@@ -14,8 +12,25 @@ const serverlessConfiguration: Serverless = {
       includeModules: true
     }
   },
-  // Add the serverless-webpack plugin
   plugins: ['serverless-webpack'],
+  resources: {
+    Resources: {
+      SQSQueue : {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: AWS_SQS_QUEUE
+        }
+      }
+    },
+    Outputs: {
+      SQSQueueUrl :{
+        Value: {Ref:'SQSQueue'}
+      },
+      SQSQueueArn: {
+        Value: {'Fn::GetAtt': ['SQSQueue', 'Arn']}
+      }
+    }
+  },
   provider: {
     name: 'aws',
     runtime: 'nodejs12.x',
@@ -60,6 +75,17 @@ const serverlessConfiguration: Serverless = {
             method: 'post',
             path: 'products',
             cors: true
+          }
+        }
+      ]
+    },
+    catalogBatchProcess: {
+      handler: 'api/catalogBatchProcess.catalogBatchProcess',
+      events: [
+        {
+          sqs: {
+            batchSize: 5,
+            arn :{'Fn::GetAtt': ['SQSQueue', 'Arn']}
           }
         }
       ]

@@ -1,5 +1,6 @@
 import type {Serverless} from 'serverless/aws';
 import {AWS_S3_BUCKET} from "./constants/common";
+import {AWS_REGION, AWS_SQS_ID, AWS_SQS_QUEUE} from "../core/constants";
 
 const serverlessConfiguration: Serverless = {
     service: {
@@ -25,10 +26,12 @@ const serverlessConfiguration: Serverless = {
         },
         environment: {
             AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+            SQS_URL: `https://sqs.${AWS_REGION}.amazonaws.com/${AWS_SQS_ID}/${AWS_SQS_QUEUE}`
         },
         iamRoleStatements: [
             {Effect: 'Allow', Action: 's3:ListBucket', Resource: [`arn:aws:s3:::${AWS_S3_BUCKET}`]},
-            {Effect: 'Allow', Action: 's3:*', Resource: [`arn:aws:s3:::${AWS_S3_BUCKET}/*`]}
+            {Effect: 'Allow', Action: 's3:*', Resource: [`arn:aws:s3:::${AWS_S3_BUCKET}/*`]},
+            {Effect: 'Allow', Action: 'sqs:*', Resource: [`arn:aws:sqs:${AWS_REGION}:${AWS_SQS_ID}:${AWS_SQS_QUEUE}`]}
         ]
     },
     functions: {

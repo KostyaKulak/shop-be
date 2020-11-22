@@ -1,13 +1,15 @@
 import {S3Event, S3Handler} from "aws-lambda";
 import {toSuccess} from "../../core/response";
+import {AWS_REGION} from "../../core/constants";
 
 const AWS = require('aws-sdk');
-const {AWS_S3_BUCKET, catalogPath, AWS_S3_REGION} = require("../constants/common");
+const {AWS_S3_BUCKET, catalogPath} = require("../constants/common");
 const csv = require("csv-parser");
 
 // @ts-ignore
 export const importFileParser: S3Handler = async (event: S3Event) => {
-    const s3 = new AWS.S3({region: AWS_S3_REGION, signatureVersion: 'v4' });
+    const s3 = new AWS.S3({region: AWS_REGION, signatureVersion: 'v4'});
+    const sqs = new AWS.SQS();
 
     const params = {
         Bucket: AWS_S3_BUCKET,
@@ -18,7 +20,18 @@ export const importFileParser: S3Handler = async (event: S3Event) => {
 
     await new Promise((resolve, reject) => {
         s3Stream.pipe(csv())
-            .on('data', (data) => console.log(data))
+            .on('data', (product) => {
+                sqs.sendMessage({
+                    QueueUrl: process.env.SQS_URL,
+                    MessageBody: JSON.stringify(product)
+                }, (err,data) => {
+                    // if (err){
+                    console.log(err);
+                    console.log(data);
+                    // }
+                    console.log(`Send message for: ${JSON.stringify(product)}`);
+                });
+            })
             .on('error', (error) => reject(error))
             .on('end', async () => {
                 for (const record of event.Records) {
