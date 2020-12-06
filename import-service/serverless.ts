@@ -1,6 +1,6 @@
 import type {Serverless} from 'serverless/aws';
 import {AWS_S3_BUCKET} from "./constants/common";
-import {AWS_REGION, AWS_STACK_ID, AWS_SQS_QUEUE} from "../core/constants";
+import {AWS_REGION, AWS_SQS_QUEUE, AWS_STACK_ID} from "../core/constants";
 
 const serverlessConfiguration: Serverless = {
     service: {

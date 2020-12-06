@@ -1,5 +1,5 @@
-import type { Serverless } from 'serverless/aws';
-import {AWS_REGION, AWS_SQS_QUEUE, AWS_STACK_ID} from "../core/constants";
+import type {Serverless} from 'serverless/aws';
+import {AWS_REGION, AWS_SNS_TOPIC, AWS_SQS_QUEUE} from "../core/constants";
 
 const serverlessConfiguration: Serverless = {
   service: {
@@ -15,10 +15,43 @@ const serverlessConfiguration: Serverless = {
   plugins: ['serverless-webpack'],
   resources: {
     Resources: {
-      SQSQueue : {
+      SQSQueue: {
         Type: 'AWS::SQS::Queue',
         Properties: {
-          QueueName: AWS_SQS_QUEUE
+          QueueName: AWS_SQS_QUEUE,
+          ReceiveMessageWaitTimeSeconds: 20
+        }
+      },
+      SNSTopic: {
+        Type: 'AWS::SNS::Topic',
+        Properties: {
+          TopicName: AWS_SNS_TOPIC
+        }
+      },
+      SNSSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'kulak.konstantin@mail.ru',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'SNSTopic'
+          },
+          FilterPolicy: {
+            publishingStatus: 'succeeded'
+          }
+        }
+      },
+      SNSSubscriptionFailedPublishing: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: 'kkulak24@gmail.com',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'SNSTopic'
+          },
+          FilterPolicy: {
+            publishingStatus: 'failed'
+          }
         }
       }
     },
@@ -33,7 +66,7 @@ const serverlessConfiguration: Serverless = {
   },
   provider: {
     name: 'aws',
-    runtime: 'nodejs12.x',
+    runtime: AWS_REGION,
     region: 'eu-west-1',
     apiGateway: {
       minimumCompressionSize: 1024,
@@ -42,7 +75,11 @@ const serverlessConfiguration: Serverless = {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
     },
     iamRoleStatements: [
-      {Effect: 'Allow', Action: 'lambda:InvokeFunction', Resource: [`arn:aws:lambda:${AWS_REGION}:${AWS_STACK_ID}:function:product-service-dev-postProducts`]}
+      {
+        Effect: 'Allow',
+        Action: "sqs:*",
+        Resource: [{arn: {'Fn::GetAtt': ['SQSQueue', 'Arn']}}]
+      }
     ]
 
   },

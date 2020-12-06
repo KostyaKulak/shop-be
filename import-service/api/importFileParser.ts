@@ -9,7 +9,7 @@ const csv = require("csv-parser");
 // @ts-ignore
 export const importFileParser: S3Handler = async (event: S3Event) => {
     const s3 = new AWS.S3({region: AWS_REGION, signatureVersion: 'v4'});
-    const sqs = new AWS.SQS();
+    const sqs = new AWS.SQS({region: AWS_REGION});
 
     const params = {
         Bucket: AWS_S3_BUCKET,
@@ -28,10 +28,9 @@ export const importFileParser: S3Handler = async (event: S3Event) => {
                     if (err) {
                         console.log(err);
                     } else {
-                        console.log(product);
                         console.log(`Send message for: ${JSON.stringify(product)}`);
                     }
-                });
+                }).promise();
             })
             .on('error', (error) => reject(error))
             .on('end', async () => {
