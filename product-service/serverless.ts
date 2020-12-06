@@ -31,26 +31,26 @@ const serverlessConfiguration: Serverless = {
       SNSSubscription: {
         Type: 'AWS::SNS::Subscription',
         Properties: {
+          FilterPolicy: {
+            publishingStatus: ['succeeded']
+          },
           Endpoint: 'kulak.konstantin@mail.ru',
           Protocol: 'email',
           TopicArn: {
             Ref: 'SNSTopic'
-          },
-          FilterPolicy: {
-            publishingStatus: 'succeeded'
           }
         }
       },
       SNSSubscriptionFailedPublishing: {
         Type: 'AWS::SNS::Subscription',
         Properties: {
+          FilterPolicy: {
+            publishingStatus: ['failed']
+          },
           Endpoint: 'kkulak24@gmail.com',
           Protocol: 'email',
           TopicArn: {
             Ref: 'SNSTopic'
-          },
-          FilterPolicy: {
-            publishingStatus: 'failed'
           }
         }
       }
@@ -77,9 +77,18 @@ const serverlessConfiguration: Serverless = {
     iamRoleStatements: [
       {
         Effect: 'Allow',
-        Action: "sqs:*",
-        Resource: [{arn: {'Fn::GetAtt': ['SQSQueue', 'Arn']}}]
-      }
+        Action: 'sqs:*',
+        Resource: {
+          'Fn::GetAtt': ['SQSQueue', 'Arn'],
+        }
+      },
+      {
+        Effect: 'Allow',
+        Action: 'sns:*',
+        Resource: {
+          Ref: 'SNSTopic'
+        }
+      },
     ]
 
   },
